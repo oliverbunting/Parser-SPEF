@@ -25,6 +25,7 @@ message(STATUS "CMAKE_EXE_LINKER_FLAGS: " ${CMAKE_EXE_LINKER_FLAGS})
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE parser-spef)
 
+option(ENABLE_PARSER_SPEF_TESTS "Enable tests" ON)
 # -----------------------------------------------------------------------------
 # Example program
 # -----------------------------------------------------------------------------
@@ -40,28 +41,25 @@ target_link_libraries(parser-spef-example stdc++fs ${PROJECT_NAME})
 # -----------------------------------------------------------------------------
 # Unittest
 # -----------------------------------------------------------------------------
-enable_testing()
+if(ENABLE_PARSER_SPEF_TESTS)
+  enable_testing()
 
-message(STATUS "Building unit tests ...")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/unittest)
+  add_executable(parser-spef-test unittest/parser-spef.cpp)
+  target_link_libraries(parser-spef-test stdc++fs ${PROJECT_NAME})
+  target_include_directories(parser-spef-test PRIVATE doctest)
 
-add_executable(parser-spef-test unittest/parser-spef.cpp)
-target_link_libraries(parser-spef-test stdc++fs ${PROJECT_NAME})
-target_include_directories(parser-spef-test PRIVATE doctest)
+  add_executable(benchmark unittest/benchmark.cpp)
+  target_link_libraries(benchmark stdc++fs ${PROJECT_NAME})
+  target_include_directories(benchmark PRIVATE doctest)
 
-add_executable(benchmark unittest/benchmark.cpp)
-target_link_libraries(benchmark stdc++fs ${PROJECT_NAME})
-target_include_directories(benchmark PRIVATE doctest)
-
-
-add_test(HeaderFix ${PROJECT_SOURCE_DIR}/unittest/parser-spef -tc=Header.Fix)
-add_test(HeaderRandom ${PROJECT_SOURCE_DIR}/unittest/parser-spef -tc=Header.Random)
-add_test(NameMap ${PROJECT_SOURCE_DIR}/unittest/parser-spef -tc=NameMap)
-add_test(Port ${PROJECT_SOURCE_DIR}/unittest/parser-spef -tc=Port)
-add_test(Net ${PROJECT_SOURCE_DIR}/unittest/parser-spef -tc=Net)
-add_test(NameExpansion ${PROJECT_SOURCE_DIR}/unittest/parser-spef -tc=NAME_EXPANSION)
-add_test(Benchmark ${PROJECT_SOURCE_DIR}/unittest/benchmark)
-
+  add_test(HeaderFix ${PROJECT_SOURCE_DIR}/unittest/parser-spef -tc=Header.Fix)
+  add_test(HeaderRandom ${PROJECT_SOURCE_DIR}/unittest/parser-spef -tc=Header.Random)
+  add_test(NameMap ${PROJECT_SOURCE_DIR}/unittest/parser-spef -tc=NameMap)
+  add_test(Port ${PROJECT_SOURCE_DIR}/unittest/parser-spef -tc=Port)
+  add_test(Net ${PROJECT_SOURCE_DIR}/unittest/parser-spef -tc=Net)
+  add_test(NameExpansion ${PROJECT_SOURCE_DIR}/unittest/parser-spef -tc=NAME_EXPANSION)
+  add_test(Benchmark ${PROJECT_SOURCE_DIR}/unittest/benchmark)
+endif()
 
 
 # INSTALL
